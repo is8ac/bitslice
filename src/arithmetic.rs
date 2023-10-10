@@ -11,7 +11,7 @@ fn full_adder<V: BitArray>(a: V, b: V, c: V) -> (V, V) {
 }
 
 /// Add two `L` bit numbers together to produce an `L+1` bit number. Thus it will not overflow.
-/// Note that this uses big endian byte order! If your host CPU is little endian and your numbers are >8 bits, you will need top call `swap_endianness()` on the bits.
+/// Note that this uses big endian byte order! If your host CPU is little endian and your numbers are >8 bits, you will need top call `fix_endianness()` on the bits.
 pub fn bit_add<V: BitArray, const L: usize>(a: &[V; L], b: &[V; L]) -> [V; L + 1] {
     let mut acc = [V::splat(false); L + 1];
     let (zero, c) = half_adder(a[L - 1], b[L - 1]);
@@ -78,9 +78,21 @@ pub fn comparator<V: BitArray, const L: usize>(a: &[V; L], b: &[V; L]) -> (V, V,
 }
 
 /// Since bitslice logic is big endian, if you are running on a little endian CPU (such as x86 and most ARMs) you must swap the byte order before and after doing math.
-pub fn swap_endianness<T, const L: usize>(bits: &mut [T; { L * 8 }]) {
-    let tmp: &mut [[T; 8]; L] = unsafe { mem::transmute(bits) };
-    tmp.reverse();
+/// This function will swap byte order only on little endian machines, on big endian machines it should compile to a null op.
+pub fn fix_endianness<T, const L: usize>(bits: &mut [T; { L * 8 }]) {
+    if cfg!(target_endian = "little") {
+        let tmp: &mut [[T; 8]; L] = unsafe { mem::transmute(bits) };
+        tmp.reverse();
+    }
+}
+
+/// Pads the integer with zeros on the most significant side, thus preserving the value while permitting it to be transposed and such like.
+pub fn pad<T: Copy + BitArray, const S: usize, const L: usize>(input: &[T; S]) -> [T; L] {
+    let mut target = [T::splat(false); L];
+    for i in 0..S {
+        target[i + (L - S)] = input[i];
+    }
+    target
 }
 
 #[cfg(test)]
@@ -95,10 +107,10 @@ mod tests {
     fn add_test_8() {
         let mut rng = Pcg64::seed_from_u64(42);
         let input_a: [B8; 256] = [(); 256].map(|i| B8([rng.gen::<u8>() >> 1]));
-        let mut bitsliced_input_a = <B8 as Transpose<B256>>::transpose(BitMatrix(input_a));
+        let bitsliced_input_a = <B8 as Transpose<B256>>::transpose(BitMatrix(input_a));
 
         let input_b: [B8; 256] = [(); 256].map(|i| B8([rng.gen::<u8>() >> 1]));
-        let mut bitsliced_input_b = <B8 as Transpose<B256>>::transpose(BitMatrix(input_b));
+        let bitsliced_input_b = <B8 as Transpose<B256>>::transpose(BitMatrix(input_b));
 
         let mut sum: [B256; 8] = bit_add::<B256, 7>(
             &bitsliced_input_a.0[1..8].try_into().unwrap(),
@@ -121,18 +133,18 @@ mod tests {
         let input_a: [u16; 256] = [(); 256].map(|i| rng.gen::<u16>() >> 1);
         let mut bitsliced_input_a =
             <B16 as Transpose<B256>>::transpose(BitMatrix(unsafe { mem::transmute(input_a) }));
-        swap_endianness::<_, 2>(&mut bitsliced_input_a.0);
+        fix_endianness::<_, 2>(&mut bitsliced_input_a.0);
 
         let input_b: [u16; 256] = [(); 256].map(|i| rng.gen::<u16>() >> 1);
         let mut bitsliced_input_b =
             <B16 as Transpose<B256>>::transpose(BitMatrix(unsafe { mem::transmute(input_b) }));
-        swap_endianness::<_, 2>(&mut bitsliced_input_b.0);
+        fix_endianness::<_, 2>(&mut bitsliced_input_b.0);
 
         let mut sum: [B256; 16] = bit_add::<B256, 15>(
             &bitsliced_input_a.0[1..16].try_into().unwrap(),
             &bitsliced_input_b.0[1..16].try_into().unwrap(),
         );
-        swap_endianness::<_, 2>(&mut sum);
+        fix_endianness::<_, 2>(&mut sum);
         let int_sum = <B256 as Transpose<B16>>::transpose(BitMatrix(sum));
         let int_sum: [u16; 256] = unsafe { mem::transmute(int_sum) };
 
@@ -151,18 +163,18 @@ mod tests {
         let input_a: [u32; 256] = [(); 256].map(|i| rng.gen::<u32>() >> 1);
         let mut bitsliced_input_a =
             <B32 as Transpose<B256>>::transpose(BitMatrix(unsafe { mem::transmute(input_a) }));
-        swap_endianness::<_, 4>(&mut bitsliced_input_a.0);
+        fix_endianness::<_, 4>(&mut bitsliced_input_a.0);
 
         let input_b: [u32; 256] = [(); 256].map(|i| rng.gen::<u32>() >> 1);
         let mut bitsliced_input_b =
             <B32 as Transpose<B256>>::transpose(BitMatrix(unsafe { mem::transmute(input_b) }));
-        swap_endianness::<_, 4>(&mut bitsliced_input_b.0);
+        fix_endianness::<_, 4>(&mut bitsliced_input_b.0);
 
         let mut sum: [B256; 32] = bit_add::<B256, 31>(
             &bitsliced_input_a.0[1..32].try_into().unwrap(),
             &bitsliced_input_b.0[1..32].try_into().unwrap(),
         );
-        swap_endianness::<_, 4>(&mut sum);
+        fix_endianness::<_, 4>(&mut sum);
         let int_sum = <B256 as Transpose<B32>>::transpose(BitMatrix(sum));
         let int_sum: [u32; 256] = unsafe { mem::transmute(int_sum) };
 
@@ -205,10 +217,10 @@ mod tests {
     fn cmp_8_test() {
         let mut rng = Pcg64::seed_from_u64(42);
         let input_a: [B8; 256] = [(); 256].map(|i| B8([rng.gen::<u8>()]));
-        let mut bitsliced_input_a = <B8 as Transpose<B256>>::transpose(BitMatrix(input_a));
+        let bitsliced_input_a = <B8 as Transpose<B256>>::transpose(BitMatrix(input_a));
 
         let input_b: [B8; 256] = [(); 256].map(|i| B8([rng.gen::<u8>()]));
-        let mut bitsliced_input_b = <B8 as Transpose<B256>>::transpose(BitMatrix(input_b));
+        let bitsliced_input_b = <B8 as Transpose<B256>>::transpose(BitMatrix(input_b));
 
         let cmp: (B256, B256, B256) =
             comparator::<B256, 8>(&bitsliced_input_a.0, &bitsliced_input_b.0);

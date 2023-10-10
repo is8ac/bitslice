@@ -20,7 +20,7 @@ use std::ops::{BitAnd, BitOr, BitXor, Not};
 pub mod arithmetic;
 mod transpose;
 
-/// A wrapper to force 64 byte alignment
+/// A wrapper to force 64 byte alignment.
 /// This does mean that some small matrices will be suboptimally layed out when multiple if them are stored together.
 #[repr(align(64))]
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
@@ -315,7 +315,7 @@ pub trait Transpose<T: BitArray>: BitArray {
 }
 
 impl Transpose<B128> for B8 {
-    fn transpose(mut a: BitMatrix<B8, 128>) -> BitMatrix<B128, 8> {
+    fn transpose(a: BitMatrix<B8, 128>) -> BitMatrix<B128, 8> {
         let mut target = BitMatrix([B128::splat(false); 8]);
         for i in 0..8 {
             let mut sub_target = [B8::splat(false); 16];
@@ -332,7 +332,7 @@ impl Transpose<B128> for B8 {
 }
 
 impl Transpose<B256> for B8 {
-    fn transpose(mut a: BitMatrix<B8, 256>) -> BitMatrix<B256, 8> {
+    fn transpose(a: BitMatrix<B8, 256>) -> BitMatrix<B256, 8> {
         let mut target = BitMatrix([B256::splat(false); 8]);
         for i in 0..8 {
             let mut sub_target = [B8::splat(false); 32];
@@ -349,7 +349,7 @@ impl Transpose<B256> for B8 {
 }
 
 impl Transpose<B512> for B8 {
-    fn transpose(mut a: BitMatrix<B8, 512>) -> BitMatrix<B512, 8> {
+    fn transpose(a: BitMatrix<B8, 512>) -> BitMatrix<B512, 8> {
         let mut target = BitMatrix([B512::splat(false); 8]);
         for i in 0..8 {
             let mut sub_target = [B8::splat(false); 64];
@@ -368,7 +368,7 @@ impl Transpose<B512> for B8 {
 // 16
 
 impl Transpose<B128> for B16 {
-    fn transpose(mut a: BitMatrix<B16, 128>) -> BitMatrix<B128, 16> {
+    fn transpose(a: BitMatrix<B16, 128>) -> BitMatrix<B128, 16> {
         let mut target = BitMatrix([B128::splat(false); 16]);
         for i in 0..16 {
             let mut sub_target = [B16::splat(false); 8];
@@ -386,7 +386,7 @@ impl Transpose<B128> for B16 {
 }
 
 impl Transpose<B256> for B16 {
-    fn transpose(mut a: BitMatrix<B16, 256>) -> BitMatrix<B256, 16> {
+    fn transpose(a: BitMatrix<B16, 256>) -> BitMatrix<B256, 16> {
         let mut target = BitMatrix([B256::splat(false); 16]);
         for i in 0..16 {
             let mut sub_target = [B16::splat(false); 16];
@@ -404,7 +404,7 @@ impl Transpose<B256> for B16 {
 }
 
 impl Transpose<B512> for B16 {
-    fn transpose(mut a: BitMatrix<B16, 512>) -> BitMatrix<B512, 16> {
+    fn transpose(a: BitMatrix<B16, 512>) -> BitMatrix<B512, 16> {
         let mut target = BitMatrix([B512::splat(false); 16]);
         for i in 0..16 {
             let mut sub_target = [B16::splat(false); 32];
@@ -424,7 +424,7 @@ impl Transpose<B512> for B16 {
 // 32
 
 impl Transpose<B128> for B32 {
-    fn transpose(mut a: BitMatrix<B32, 128>) -> BitMatrix<B128, 32> {
+    fn transpose(a: BitMatrix<B32, 128>) -> BitMatrix<B128, 32> {
         let mut target = BitMatrix([B128::splat(false); 32]);
         for i in 0..32 {
             let mut sub_target = [B32::splat(false); 4];
@@ -443,7 +443,7 @@ impl Transpose<B128> for B32 {
 }
 
 impl Transpose<B256> for B32 {
-    fn transpose(mut a: BitMatrix<B32, 256>) -> BitMatrix<B256, 32> {
+    fn transpose(a: BitMatrix<B32, 256>) -> BitMatrix<B256, 32> {
         let mut target = BitMatrix([B256::splat(false); 32]);
         for i in 0..32 {
             let mut sub_target = [B32::splat(false); 8];
@@ -462,7 +462,7 @@ impl Transpose<B256> for B32 {
 }
 
 impl Transpose<B512> for B32 {
-    fn transpose(mut a: BitMatrix<B32, 512>) -> BitMatrix<B512, 32> {
+    fn transpose(a: BitMatrix<B32, 512>) -> BitMatrix<B512, 32> {
         let mut target = BitMatrix([B512::splat(false); 32]);
         for i in 0..32 {
             let mut sub_target = [B32::splat(false); 16];
@@ -483,7 +483,7 @@ impl Transpose<B512> for B32 {
 // 64
 
 impl Transpose<B128> for B64 {
-    fn transpose(mut a: BitMatrix<B64, 128>) -> BitMatrix<B128, 64> {
+    fn transpose(a: BitMatrix<B64, 128>) -> BitMatrix<B128, 64> {
         let mut target = BitMatrix([B128::splat(false); 64]);
         for i in 0..64 {
             target.0[i] = unsafe { mem::transmute((a.0[i], a.0[i + 64])) };
@@ -499,7 +499,7 @@ impl Transpose<B128> for B64 {
 }
 
 impl Transpose<B256> for B64 {
-    fn transpose(mut a: BitMatrix<B64, 256>) -> BitMatrix<B256, 64> {
+    fn transpose(a: BitMatrix<B64, 256>) -> BitMatrix<B256, 64> {
         let mut target = BitMatrix([B256::splat(false); 64]);
         for i in 0..64 {
             target.0[i] = unsafe {
@@ -522,7 +522,7 @@ impl Transpose<B256> for B64 {
 }
 
 impl Transpose<B512> for B64 {
-    fn transpose(mut a: BitMatrix<B64, 512>) -> BitMatrix<B512, 64> {
+    fn transpose(a: BitMatrix<B64, 512>) -> BitMatrix<B512, 64> {
         let mut target = BitMatrix([B512::splat(false); 64]);
         for i in 0..64 {
             target.0[i] = unsafe {
@@ -624,7 +624,7 @@ impl Transpose<B128> for B128 {
 }
 
 impl Transpose<B256> for B128 {
-    fn transpose(mut a: BitMatrix<B128, 256>) -> BitMatrix<B256, 128> {
+    fn transpose(a: BitMatrix<B128, 256>) -> BitMatrix<B256, 128> {
         let mut target = BitMatrix([B256::splat(false); 128]);
         for i in 0..128 {
             target.0[i] = unsafe { mem::transmute((a.0[i], a.0[i + 128])) };
@@ -641,7 +641,7 @@ impl Transpose<B256> for B128 {
 }
 
 impl Transpose<B512> for B128 {
-    fn transpose(mut a: BitMatrix<B128, 512>) -> BitMatrix<B512, 128> {
+    fn transpose(a: BitMatrix<B128, 512>) -> BitMatrix<B512, 128> {
         let mut target = BitMatrix([B512::splat(false); 128]);
         for i in 0..128 {
             target.0[i] = unsafe {
