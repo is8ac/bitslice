@@ -10,12 +10,12 @@ It has intrinsics for AVX512 and for ARM Neon, and a fallback implementation whi
 For good performance, be sure to set `rustflags = ["-C", "target-cpu=native"]`
 
 ## nice to have TODO
-[ ]: benchmarks
-[ ]: Perf improvements
-[ ]: AVX2 implementation
-[ ]: Flexible counter
-[ ]: Flexible bit expand
-[ ]: Runtime dynamic AIG logic
-[ ]: LUT mapper
-[ ]: reg mapper
-[ ]: proc macro compiler
+- [ ] benchmarks
+- [ ] Perf improvements
+- [ ] AVX2 implementation
+- [ ] Flexible counter
+- [ ] Flexible bit expand
+- [ ] Runtime dynamic AIG logic
+- [ ] LUT mapper
+- [ ] reg mapper
+- [ ] proc macro compiler
