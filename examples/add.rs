@@ -1,5 +1,5 @@
-use bitslice::arithmetic::{bit_add, comparator, fix_endianness, pad, popcnt128};
-use bitslice::{BitArray, BitMatrix, Transpose, B16, B32, B512};
+use bitslice::arithmetic::{bit_add, fix_endianness, pad};
+use bitslice::{BitMatrix, Transpose, B16, B32, B512};
 use rand::{Rng, SeedableRng};
 use rand_pcg::Pcg64;
 use std::mem;
@@ -34,7 +34,7 @@ fn main() {
     // Now we can switch the endianess back,
     fix_endianness::<B512, 4>(&mut padded);
     // transpose it back,
-    let mut bits: BitMatrix<B32, 512> = <B512 as Transpose<B32>>::transpose(BitMatrix(padded));
+    let bits: BitMatrix<B32, 512> = <B512 as Transpose<B32>>::transpose(BitMatrix(padded));
     // and transmute back to u32s.
     let ints_sum: [u32; 512] = unsafe { mem::transmute(bits) };
 

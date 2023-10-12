@@ -2,7 +2,7 @@
 #![feature(portable_simd)]
 #![feature(stdsimd)]
 #![feature(inline_const)]
-#![feature(adt_const_params)]
+//#![feature(adt_const_params)]
 
 use crate::transpose::BitSwap;
 #[cfg(target_feature = "avx512f")]
@@ -762,7 +762,7 @@ impl Transpose<B256> for B256 {
 }
 
 impl Transpose<B512> for B256 {
-    fn transpose(mut a: BitMatrix<B256, 512>) -> BitMatrix<B512, 256> {
+    fn transpose(a: BitMatrix<B256, 512>) -> BitMatrix<B512, 256> {
         let mut target = BitMatrix([B512::splat(false); 256]);
         for i in 0..256 {
             target.0[i] = unsafe { mem::transmute((a.0[i], a.0[i + 256])) };

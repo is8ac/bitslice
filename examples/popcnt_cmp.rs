@@ -1,5 +1,5 @@
 use bitslice::arithmetic::{comparator, pad, popcnt128};
-use bitslice::{BitArray, BitMatrix, Transpose, B128, B512, B8};
+use bitslice::{BitMatrix, Transpose, B128, B512, B8};
 use rand::{Rng, SeedableRng};
 use rand_pcg::Pcg64;
 use std::mem;

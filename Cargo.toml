@@ -2,6 +2,11 @@
 name = "bitslice"
 version = "0.1.0"
 edition = "2021"
+authors = ["Isaac Leonard <isaac@isaacleonard.com>"]
+description = "A crate to transpose bits into and out of bitslice format, and perform various operations on bitsliced data."
+readme = "readme.md"
+repository = "https://github.com/is8ac/bitslice/"
+license = "MIT OR Apache-2.0"
 
 [dependencies]
 rand = "0.8"

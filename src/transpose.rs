@@ -1,12 +1,4 @@
-#![feature(portable_simd)]
-#![feature(inline_const)]
-#![feature(generic_const_exprs)]
-#![feature(stdsimd)]
-#![feature(avx512_target_feature)]
-
 use crate::{B128, B16, B256, B32, B512, B64, B8};
-use rand::distributions::Standard;
-use rand::prelude::Distribution;
 #[cfg(target_feature = "neon")]
 use std::arch::aarch64;
 #[cfg(target_feature = "neon")]
@@ -15,8 +7,11 @@ use std::arch::aarch64::{uint16x8_t, uint32x4_t, uint64x2_t, uint8x16_t};
 use std::arch::x86_64;
 #[cfg(target_feature = "avx512f")]
 use std::arch::x86_64::{__m128i, __m256i, __m512i, __mmask64};
-use std::fmt;
+#[cfg(target_feature = "avx512f")]
+use std::simd::Simd;
+#[cfg(target_feature = "neon")]
 use std::mem;
+#[cfg(target_feature = "neon")]
 use std::simd::Simd;
 
 fn swap_bits_0<const L: usize>(a: [u8; L], b: [u8; L]) -> ([u8; L], [u8; L]) {
@@ -1397,7 +1392,7 @@ pub trait BitSwap: Sized + Copy + Default {
         swap_fn: F,
     ) {
         let lo_mask = !(!0 << je);
-        let hi_mask = ((!0) << (je + 1));
+        let hi_mask = (!0) << (je + 1);
         for i in base..base + (1 << level) {
             let lo = i & lo_mask;
             let hi = (i << 1) & hi_mask;
@@ -1413,7 +1408,7 @@ pub trait BitSwap: Sized + Copy + Default {
         swap_fn: F,
     ) {
         let lo_mask = !(!0 << je);
-        let hi_mask = ((!0) << (je + 1));
+        let hi_mask = (!0) << (je + 1);
         for i in 0..2usize.pow(S - 1) {
             let lo = i & lo_mask;
             let hi = (i << 1) & hi_mask;
