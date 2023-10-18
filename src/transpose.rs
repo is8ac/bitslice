@@ -7,10 +7,10 @@ use std::arch::aarch64::{uint16x8_t, uint32x4_t, uint64x2_t, uint8x16_t};
 use std::arch::x86_64;
 #[cfg(target_feature = "avx512f")]
 use std::arch::x86_64::{__m128i, __m256i, __m512i, __mmask64};
-#[cfg(target_feature = "avx512f")]
-use std::simd::Simd;
 #[cfg(target_feature = "neon")]
 use std::mem;
+#[cfg(target_feature = "avx512f")]
+use std::simd::Simd;
 #[cfg(target_feature = "neon")]
 use std::simd::Simd;
 

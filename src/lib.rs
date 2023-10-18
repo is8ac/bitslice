@@ -141,7 +141,7 @@ impl_bit_vec!(B512, 64, 64);
 impl BitArray for B8 {
     const LEN: usize = 8;
     fn splat(s: bool) -> Self {
-        Self([0u8.saturating_sub(s as u8); 1])
+        Self([0u8.wrapping_sub(s as u8); 1])
     }
     fn get_bit(self, index: usize) -> bool {
         generic_get_bit(self.0, index)
@@ -162,7 +162,7 @@ impl BitArray for B8 {
 impl BitArray for B16 {
     const LEN: usize = 16;
     fn splat(s: bool) -> Self {
-        Self([0u8.saturating_sub(s as u8); 2])
+        Self([0u8.wrapping_sub(s as u8); 2])
     }
     fn get_bit(self, index: usize) -> bool {
         generic_get_bit(self.0, index)
@@ -184,7 +184,7 @@ impl BitArray for B16 {
 impl BitArray for B32 {
     const LEN: usize = 32;
     fn splat(s: bool) -> Self {
-        Self([0u8.saturating_sub(s as u8); 4])
+        Self([0u8.wrapping_sub(s as u8); 4])
     }
     fn get_bit(self, index: usize) -> bool {
         generic_get_bit(self.0, index)
@@ -207,7 +207,7 @@ impl BitArray for B32 {
 impl BitArray for B64 {
     const LEN: usize = 64;
     fn splat(s: bool) -> Self {
-        Self([0u8.saturating_sub(s as u8); 8])
+        Self([0u8.wrapping_sub(s as u8); 8])
     }
     fn get_bit(self, index: usize) -> bool {
         generic_get_bit(self.0, index)
@@ -231,7 +231,7 @@ impl BitArray for B64 {
 impl BitArray for B128 {
     const LEN: usize = 128;
     fn splat(s: bool) -> Self {
-        Self([0u8.saturating_sub(s as u8); 16])
+        Self([0u8.wrapping_sub(s as u8); 16])
     }
     fn get_bit(self, index: usize) -> bool {
         generic_get_bit(self.0, index)
@@ -256,7 +256,7 @@ impl BitArray for B128 {
 impl BitArray for B256 {
     const LEN: usize = 256;
     fn splat(s: bool) -> Self {
-        Self([0u8.saturating_sub(s as u8); 32])
+        Self([0u8.wrapping_sub(s as u8); 32])
     }
     fn get_bit(self, index: usize) -> bool {
         generic_get_bit(self.0, index)
@@ -283,7 +283,7 @@ impl BitArray for B256 {
 impl BitArray for B512 {
     const LEN: usize = 512;
     fn splat(s: bool) -> Self {
-        Self([0u8.saturating_sub(s as u8); 64])
+        Self([0u8.wrapping_sub(s as u8); 64])
     }
     fn get_bit(self, index: usize) -> bool {
         generic_get_bit(self.0, index)
@@ -976,4 +976,17 @@ mod tests {
     test_transpose!(test_8x128, B8, B128);
     test_transpose!(test_8x256, B8, B256);
     test_transpose!(test_8x512, B8, B512);
+
+    #[test]
+    fn test_splat() {
+        let mut rng = Pcg64::seed_from_u64(42);
+
+        let bits: B512 = rng.gen();
+        dbg!(B512::splat(false));
+        assert_eq!(!bits, bits ^ B512::splat(true));
+
+        let bits: B8 = rng.gen();
+        dbg!(B8::splat(false));
+        assert_eq!(!bits, bits ^ B8::splat(true));
+    }
 }
