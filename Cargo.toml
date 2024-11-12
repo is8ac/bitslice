@@ -1,6 +1,6 @@
 [package]
 name = "bitslice"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = ["Isaac Leonard <isaac@isaacleonard.com>"]
 description = "A crate to transpose bits into and out of bitslice format, and perform various operations on bitsliced data."

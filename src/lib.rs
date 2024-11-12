@@ -1,7 +1,8 @@
 #![feature(generic_const_exprs)]
 #![feature(portable_simd)]
-#![feature(stdsimd)]
-#![feature(inline_const)]
+#![feature(stdarch_x86_avx512)]
+//#![feature(stdsimd)]
+//#![feature(inline_const)]
 //#![feature(adt_const_params)]
 
 use crate::transpose::BitSwap;
@@ -67,6 +68,7 @@ macro_rules! impl_bit_vec {
         impl BitXor for $name {
             type Output = Self;
 
+            #[inline(always)]
             fn bitxor(self, rhs: Self) -> Self::Output {
                 let x: Simd<u8, $blen> = Simd::from_array(self.0) ^ Simd::from_array(rhs.0);
                 Self(x.into())
@@ -76,6 +78,7 @@ macro_rules! impl_bit_vec {
         impl BitAnd for $name {
             type Output = Self;
 
+            #[inline(always)]
             fn bitand(self, rhs: Self) -> Self::Output {
                 let x: Simd<u8, $blen> = Simd::from_array(self.0) & Simd::from_array(rhs.0);
                 Self(x.into())
@@ -85,6 +88,7 @@ macro_rules! impl_bit_vec {
         impl BitOr for $name {
             type Output = Self;
 
+            #[inline(always)]
             fn bitor(self, rhs: Self) -> Self::Output {
                 let x: Simd<u8, $blen> = Simd::from_array(self.0) | Simd::from_array(rhs.0);
                 Self(x.into())
@@ -93,7 +97,7 @@ macro_rules! impl_bit_vec {
 
         impl Not for $name {
             type Output = Self;
-
+            #[inline(always)]
             fn not(self) -> Self::Output {
                 let x: Simd<u8, $blen> = Simd::from_array(self.0);
                 Self((!x).into())
@@ -140,6 +144,7 @@ impl_bit_vec!(B512, 64, 64);
 
 impl BitArray for B8 {
     const LEN: usize = 8;
+    #[inline(always)]
     fn splat(s: bool) -> Self {
         Self([0u8.wrapping_sub(s as u8); 1])
     }
@@ -161,6 +166,7 @@ impl BitArray for B8 {
 
 impl BitArray for B16 {
     const LEN: usize = 16;
+    #[inline(always)]
     fn splat(s: bool) -> Self {
         Self([0u8.wrapping_sub(s as u8); 2])
     }
@@ -183,6 +189,7 @@ impl BitArray for B16 {
 
 impl BitArray for B32 {
     const LEN: usize = 32;
+    #[inline(always)]
     fn splat(s: bool) -> Self {
         Self([0u8.wrapping_sub(s as u8); 4])
     }
@@ -206,6 +213,7 @@ impl BitArray for B32 {
 
 impl BitArray for B64 {
     const LEN: usize = 64;
+    #[inline(always)]
     fn splat(s: bool) -> Self {
         Self([0u8.wrapping_sub(s as u8); 8])
     }
@@ -230,6 +238,7 @@ impl BitArray for B64 {
 
 impl BitArray for B128 {
     const LEN: usize = 128;
+    #[inline(always)]
     fn splat(s: bool) -> Self {
         Self([0u8.wrapping_sub(s as u8); 16])
     }
@@ -255,6 +264,7 @@ impl BitArray for B128 {
 
 impl BitArray for B256 {
     const LEN: usize = 256;
+    #[inline(always)]
     fn splat(s: bool) -> Self {
         Self([0u8.wrapping_sub(s as u8); 32])
     }
@@ -282,6 +292,7 @@ impl BitArray for B256 {
 
 impl BitArray for B512 {
     const LEN: usize = 512;
+    #[inline(always)]
     fn splat(s: bool) -> Self {
         Self([0u8.wrapping_sub(s as u8); 64])
     }
